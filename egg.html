@@ -1,0 +1,1545 @@
+<html lang="en">
+<head>
+<title>EEG (Draft) Manual</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="description" content="EEG (Draft) Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="top" href="#Top">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 2009, 2010, 2011 Bogolisk <bogolisk@gmail.com>.
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.2 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, with no Front-Cover Texts,
+     and with no Back-Cover Texts.
+-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Top"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Rant">Rant</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#dir">(dir)</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#dir">(dir)</a>
+
+</div>
+
+<h2 class="unnumbered">Egg (Draft) Manual</h2>
+
+<p><span class="sc">Egg</span> is an attempt to provide a seamless integration of <span class="sc">Git</span>
+within <span class="sc">Emacs</span>.  <span class="sc">Egg</span> is currently tested with <span class="sc">Git</span> 1.7.12
+and <span class="sc">Emacs</span> 23. It may work with other versions of <span class="sc">Emacs</span> and
+<span class="sc">Git</span> but it's very difficult for the <span class="sc">Egg</span>'s developer to
+investigate and fix bugs that only appear in versions or platforms that
+he doesn't use. Patches to fix bugs in other emacsen or volunteers to
+maintain compatibility however are welcome.
+
+<ul class="menu">
+<li><a accesskey="1" href="#Rant">Rant</a>
+<li><a accesskey="2" href="#Acknowledgements">Acknowledgements</a>
+<li><a accesskey="3" href="#Overview">Overview</a>
+<li><a accesskey="4" href="#File">File</a>
+<li><a accesskey="5" href="#Status">Status</a>
+<li><a accesskey="6" href="#Commit">Commit</a>
+<li><a accesskey="7" href="#Log">Log</a>
+<li><a accesskey="8" href="#Blame">Blame</a>
+<li><a accesskey="9" href="#Resolving-Conflicts">Resolving Conflicts</a>
+<li><a href="#Customisations">Customisations</a>
+<li><a href="#Commands">Commands</a>
+
+</ul>
+
+<div class="node">
+<a name="Rant"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Acknowledgements">Acknowledgements</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Top">Top</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Rant</h2>
+
+<p><span class="sc">Egg</span> wasn't designed to replace the <span class="sc">Git</span> excellent official
+porcelain layer, especially when used with the <tt>bash_completion</tt>
+package. In the <span class="sc">Egg</span>'s developer's opinion: it's pointless to write
+a <tt>git-mode</tt> in emacs to let user type <kbd>M-x git-reset</kbd> when he/she
+can do exactly the same thing in <span class="sc">Bash</span>. An emacs interface to
+<span class="sc">Git</span> should provide the conveniences that would make it easier to
+accomplish the same task than the <span class="sc">Git</span>'s porcelain. <span class="sc">Egg</span>, thus,
+was designed to perform the same goal as <span class="sc">Git Aliases</span>. Make it more
+convenient to accomplish common git operations.
+
+<p>One example:
+
+<p>The in <span class="sc">Egg's</span> status buffer, when the user <em>unstages</em> a file,
+<span class="sc">Egg</span> will invoke different git operations depend on the
+origin/status of the file: it was an existing file, it was new file or
+it was a file with merge conflicts which were just resolved in the
+index.
+
+<p>Again, <span class="sc">Egg</span> was design to help you accomplish many git common
+operations in very convenient <span class="sc">Emacs</span> way.
+
+<p>As with <span class="sc">Git Aliases</span>, <span class="sc">Egg</span> won't save you from learning
+<span class="sc">Git</span>. Instead it expects its user to be familiar with <span class="sc">Git</span>. This
+manual tries to document all <span class="sc">Egg</span> functionalities and explain the
+design of some of the commands.
+
+<div class="node">
+<a name="Acknowledgements"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Overview">Overview</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Rant">Rant</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Acknowledgements</h2>
+
+<p>In the beginning, <span class="sc">Egg</span> was a fork of <span class="sc">Marius Vollmer</span>'s excellent
+<span class="sc">Magit</span>. While <span class="sc">Egg</span> was later completely rewritten, it still
+keeps the genius <em>staging/unstaging</em> metaphor in the <em>status
+buffer</em>.
+
+<p><span class="sc">ByPlayer</span> gracefully picked up the maintainership when Bogolisk went
+hiatus for several... years!!! He's the current maintainer of <span class="sc">Egg</span>
+and his repo is at: <samp><span class="file">https://github.com/byplayer/egg</span></samp>
+
+<div class="node">
+<a name="Overview"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#File">File</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Acknowledgements">Acknowledgements</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Overview</h2>
+
+<p>Using <span class="sc">Egg</span> is simple:
+     <ul>
+<li>download <samp><span class="file">egg.el</span></samp> and put in your <span class="sc">Emacs</span>'s <code>loadpath</code>. 
+<li>add <code>(require 'egg)</code> in your <samp><span class="file">.emacs</span></samp>
+<li>very important: disable <span class="sc">Vc</span>'s git backend. 
+Do <kbd>M-x customize-option RET vc-handled-backends</kbd>. 
+Then &lt;DEL&gt; the Git option. 
+<li>open a file in a git repo from within emacs. Et voila! 
+</ul>
+
+<h3 class="unnumberedsec">Using Egg</h3>
+
+<p>Egg has many components but the 3 most important ones are:
+     <ul>
+<li>The Status Buffer
+This is where one deals with the Index and Work-Tree:
+          <ul>
+<li>staging/unstaging files/hunks
+<li>resolving merge conflicts (from merge/rebase/apply/cherry-pick/revert/stash)
+<li>launch ediff to view delta or conflicts. 
+<li>committing/amending
+<li>saving/applying stashed work-in-progresses
+</ul>
+     See <a href="#Status">Status</a>. 
+<li>The Log Buffer
+This is where one manipulates the repo's DAG:
+          <ul>
+<li>starting merge/rebase/cherry-pick/revert/reset operation. 
+If the operations started from the Log Buffer created a conflict, Egg will open
+the Status Buffer so you can resolve it. 
+<li>creating branch/tag. 
+<li>marking commits for the <em>next</em> <span class="sc">interactive-rebase</span>. 
+<li>fetching refs from remote (egg refuses to support pull). 
+<li>pushing refs to remote. 
+<li>viewing commits, use ediff with changes introduced by a commit. 
+</ul>
+     See <a href="#Log">Log</a>. 
+<li>The Minor Mode
+This mode let you issue git commands (on the buffer) while editing. Some are:
+          <ul>
+<li>staging/unstaging/cancel the current file's modifications. 
+<li>diffing the current file against the Index or another revision
+<li>search (pickaxing) history for a string/regexp/line. 
+<li>view other revisions of the current file
+<li>blame revisions for lines in the file, See <a href="#Blame">Blame</a>. 
+<li>launch ediff to compare file vs index or other revisions. 
+</ul>
+     See <a href="#File">File</a>. 
+</ul>
+
+<h3 class="unnumberedsec">Context-sensitive Key-bindings  Menu</h3>
+
+<p><a name="Context-Menu"></a>Egg heavily uses context-sensitive bindings. The command bound to a key
+depend where the cursor was. Example: on a commit line in the Log
+Buffer, <kbd>o</kbd> will checkout a branch if the cursor was on top of a
+branch name. On the other hand, it will detatch HEAD and checkout the
+commit if the cursor was on a branch name.
+
+<p><kbd>C-mouse-2</kbd> is bound it to the context menu when using
+menu. There's also a text-based electric context menu (after loading
+the <samp><span class="file">egg-key</span></samp>) , bound to <kbd>kp-enter</kbd> by default.  In the text-based
+menu, each line show the key and the description of a command.  To run
+a command you can type the command's key or move the cursor to the
+line and select the line with <kbd>kp-enter</kbd>. For example, on a commit
+line in the Log Buffer, the 3 sequences below will perfom the same
+action: create a new branch pointing at the commit.
+     <ul>
+<li><kbd>B</kbd>. 
+<li><kbd>kp-enter</kbd> to show the menu, then <kbd>B</kbd>. 
+<li><kbd>kp-enter</kbd> to show the menu, then move the line marked
+with <kbd>B</kbd> then type <kbd>kp-enter</kbd>. 
+</ul>
+
+<p>Each variant of the command that would be invoked with <kbd>C-u</kbd> would
+be displayed on a separate line under the main line of the command. For
+example, <kbd>C-u /</kbd> will be displayed on a line right after
+<kbd>/</kbd>. The 3 sequences below ill also perform the same thing: create a
+new branch even if the name is already in used.
+     <ul>
+<li><kbd>C-u B</kbd>. 
+<li><kbd>kp-enter</kbd> to show the menu then <kbd>C-u B</kbd>. 
+<li><kbd>kp-enter</kbd> to show the menu, move to the line marked with <kbd>C-u B</kbd>
+then select the line with <kbd>kp-enter</kbd>. 
+</ul>
+
+<h3 class="unnumberedsec">Sections and Subsections</h3>
+
+<p><a name="Sections"></a>In Egg special buffers, information are usually grouped in hierarchical
+sections. A section can contains one or more subsections which in turn can
+contains one or more sub-sub-sections, etc. Sections can hidden/collapsed,
+turning the whole buffer into a hierachical folding structure. The commands
+mapped when the cursor is on top of a section are:
+
+     <dl>
+<a name="egg_002dsection_002dmap"></a><dt><kbd>h</kbd><dd>Toggle the hidden state of the current section. 
+<a href="#egg_002dsection_002dcmd_002dtoggle_002dhide_002dshow">egg-section-cmd-toggle-hide-show</a>
+<br><dt><kbd>H</kbd><dd>Toggle the hidden state of the subsections of the current section. 
+<a href="#egg_002dsection_002dcmd_002dtoggle_002dhide_002dshow_002dchildren">egg-section-cmd-toggle-hide-show-children</a>
+<br><dt><kbd>n</kbd><dd>Move to the next section. 
+<a href="#egg_002dbuffer_002dcmd_002dnavigate_002dnext">egg-buffer-cmd-navigate-next</a>
+<br><dt><kbd>C-u n</kbd><dd>Move to the next section of the same type. 
+<br><dt><kbd>p</kbd><dd>Move to the previous section. 
+<a href="#egg_002dbuffer_002dcmd_002dnavigate_002dprev">egg-buffer-cmd-navigate-prev</a>
+<br><dt><kbd>C-u p</kbd><dd>Move to the previous section of the same type. 
+<br><dt><kbd>kp-enter</kbd><dd>Show a text-based context menu (if <samp><span class="file">egg-key</span></samp> package was loaded). 
+</dl>
+
+<p>Specific types of sections (diff, hunk, commit, etc.) bind extra
+commands in addition to the commands listed above.
+
+<div class="node">
+<a name="File"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Status">Status</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Overview">Overview</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">The Egg Minor Mode</h2>
+
+<h3 class="unnumberedsec">Using Egg when Editing Files</h3>
+
+<p>When the <code>egg</code> library is loaded, <code>egg-minor-mode</code> will be
+activated when visiting a file in a git repository. The mode-line will
+initially show <tt>Egg</tt>. However, after the first time the repo's status
+was read by Egg, it will show <tt>Git:branch</tt> where <tt>branch</tt> is the
+current branch-name. The following commands are mapped in the minor mode.
+
+     <dl>
+<dt><kbd>C-x v a</kbd><dd>Toggle blame mode for the current-file, See <a href="#Blame">Blame</a>. 
+<a href="#egg_002dfile_002dtoggle_002dblame_002dmode">egg-file-toggle-blame-mode</a>
+<br><dt><kbd>C-u C-x v a</kbd><dd>Do not ask for confirmaton before saving the buffer. 
+<br><dt><kbd>C-x v c</kbd><dd>Open the commit buffer for composing a message. 
+<a href="#egg_002dcommit_002dlog_002dedit">egg-commit-log-edit</a>
+<br><dt><kbd>C-u C-x v c</kbd><dd>The message will be use to amend the last commit. 
+<br><dt><kbd>C-u C-u C-x v c</kbd><dd>Just amend the last commit with the old message. 
+<br><dt><kbd>C-x v e</kbd><dd>Compare, using ediff, the current file's contents in work-dir with vs a rev. 
+<a href="#egg_002dfile_002dediff">egg-file-ediff</a>
+<br><dt><kbd>C-x v f</kbd><dd>Open a file tracked by git. 
+<a href="#egg_002dfind_002dtracked_002dfile">egg-find-tracked-file</a>
+<br><dt><kbd>C-x v h</kbd><dd>Show the commits in the current branch's DAG that modified the current file. 
+<a href="#egg_002dfile_002dlog">egg-file-log</a>
+<br><dt><kbd>C-x v i</kbd><dd>Add the current's file contents into the index. 
+<a href="#egg_002dfile_002dstage_002dcurrent_002dfile">egg-file-stage-current-file</a>
+<br><dt><kbd>C-x v o</kbd><dd>Checkout HEAD's version of the current file. 
+<a href="#egg_002dfile_002dcheckout_002dother_002dversion">egg-file-checkout-other-version</a>
+<br><dt><kbd>C-u C-x v o</kbd><dd>Ask for confirmation if the current file contains unstaged changes. 
+<br><dt><kbd>C-x v u</kbd><dd>Checkout INDEX's version of the current file. 
+<a href="#egg_002dfile_002dcancel_002dmodifications">egg-file-cancel-modifications</a>
+<br><dt><kbd>C-u C-x v u</kbd><dd>Then ask for confirmation if the current file contains unstaged changes. 
+<br><dt><kbd>C-x v v</kbd><dd>Guess and perform the next logical action. 
+<a href="#egg_002dnext_002daction">egg-next-action</a>
+<br><dt><kbd>C-u C-x v v</kbd><dd>Ask for confirmation before executing the next-action. 
+<br><dt><kbd>C-x v /</kbd><dd>Search the current file's history for changes introducing or removing a string
+<a href="#egg_002dsearch_002dfile_002dchanges">egg-search-file-changes</a>
+<br><dt><kbd>C-u C-x v /</kbd><dd>Search for a regexp instead of a string. 
+<br><dt><kbd>C-u C-x v C-u /</kbd><dd>Prompt the user for advanced search mode. 
+<br><dt><kbd>C-x v =</kbd><dd>Diff the current file in another window. 
+<a href="#egg_002dfile_002ddiff">egg-file-diff</a>
+<br><dt><kbd>C-x v ~</kbd><dd>Show other version of the current file in another window. 
+<a href="#egg_002dfile_002dversion_002dother_002dwindow">egg-file-version-other-window</a>
+</dl>
+
+<p>The following commands launch Egg's special buffers to perform various
+git related tasks.
+     <dl>
+<dt><kbd>C-x v b</kbd><dd>Start a new branch from HEAD. 
+<a href="#egg_002dstart_002dnew_002dbranch">egg-start-new-branch</a>
+<br><dt><kbd>C-x v ?</kbd><dd>Search the current branch's history for changes introducing/removing a term. 
+<a href="#egg_002dsearch_002dchanges">egg-search-changes</a>
+<br><dt><kbd>C-x v l</kbd><dd>Show the commit DAG of a ref, See <a href="#Log">Log</a>. 
+<a href="#egg_002dlog">egg-log</a>
+<br><dt><kbd>C-x v L</kbd><dd>Show commit DAG of a ref and its reflogs, See <a href="#Log">Log</a>. 
+<a href="#egg_002dreflog">egg-reflog</a>
+<br><dt><kbd>C-x v s</kbd><dd>Show the status of the current repo, See <a href="#Status">Status</a>. 
+<a href="#egg_002dstatus">egg-status</a>
+</dl>
+
+<div class="node">
+<a name="Status"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Commit">Commit</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#File">File</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Status Buffer, manipulating the Index and the Worktree.</h2>
+
+<p>This special buffer is one of <span class="sc">Egg</span>'s two important special buffers
+(the other is the <span class="sc">Log Buffer</span>). It's launched by the
+<a href="#egg_002dstatus">egg-status</a>. This buffer is designed to manipulate the <span class="sc">Index</span>
+and the <span class="sc">WorkTree</span>. As its name indicates, it show the current status
+of the repository. It's also the place where user goes, to resolve
+conflicts during merge or rebase. Since its purpose is to manipulate the
+<span class="sc">Index</span> and the <span class="sc">WorkTree</span>, the Status Buffer also shows the list
+of <em>stashed</em> WIPs.
+
+<p>Out of the box, the status buffer displays a <em>lot</em> of
+informations. However, you can customize what and how it displays
+informations. For <em>what</em> to show, See <a href="#egg_002dstatus_002dbuffer_002dsections">egg-status-buffer-sections</a>. For
+<em>how</em> to show, See <a href="#egg_002dbuffer_002dhide_002dsub_002dblocks_002don_002dstart">egg-buffer-hide-sub-blocks-on-start</a>, and
+See <a href="#egg_002dbuffer_002dhide_002dsub_002dblocks_002don_002dstart">egg-buffer-hide-sub-blocks-on-start</a>.
+
+<p>By default, the status buffer display 5 sections. On the top is the
+<span class="sc">Repo</span> section where it shows the current branch (or current commit
+if HEAD was detached), the sha1, the repository and optionally the
+<span class="sc">Help</span> section (the Help section can be initially hidden
+see <a href="#egg_002dbuffer_002dhide_002dhelp_002don_002dstart">egg-buffer-hide-help-on-start</a>, or simply omitted
+see <a href="#egg_002dshow_002dkey_002dhelp_002din_002dbuffers">egg-show-key-help-in-buffers</a>). Following the repo section is the
+<span class="sc">Unstaged</span> section. This section shows a sequence of diffs,
+describing difference between the index and the work-tree. Next comes
+the <span class="sc">Staged</span> section, this section also contains a sequence of diffs
+but they describe the difference between HEAD and the index. Another one
+is the <span class="sc">Untracked</span> section where the untracked files in the
+repository are listed. Finally, the last section is <span class="sc">Stash</span>, where
+stashed WIPs are displayed. To navigate among the sections as well as
+their subsection, See <a href="#Sections">Sections</a>.
+
+<p>The basic <em>non</em>-context-sensitive bindings in the <span class="sc">Status Buffer</span>
+(and the <span class="sc">Log Buffer</span>) are:
+     <dl>
+<a name="egg_002dbuffer_002dmode_002dmap"></a><dt><kbd>q</kbd><dd>Leave (and burry) the special buffer
+<a href="#egg_002dquit_002dbuffer">egg-quit-buffer</a>
+<br><dt><kbd>G</kbd><dd>Re-initialize the current special buffer. 
+<a href="#egg_002dbuffer_002dcmd_002drefresh">egg-buffer-cmd-refresh</a>
+<br><dt><kbd>g</kbd><dd>Refresh the current egg special buffer. 
+<a href="#egg_002dbuffer_002dcmd_002drefresh">egg-buffer-cmd-refresh</a>
+<br><dt><kbd>n</kbd><dd>Move to the next section. 
+<a href="#egg_002dbuffer_002dcmd_002dnavigate_002dnext">egg-buffer-cmd-navigate-next</a>
+<br><dt><kbd>C-u n</kbd><dd>Move to the next section of the same type. 
+<br><dt><kbd>p</kbd><dd>Move to the previous section. 
+<a href="#egg_002dbuffer_002dcmd_002dnavigate_002dprev">egg-buffer-cmd-navigate-prev</a>
+<br><dt><kbd>C-u p</kbd><dd>Move to the previous section of the same type. 
+</dl>
+
+<p>The <span class="sc">Status Buffer</span> also bind the following <em>non</em> context-sensitive commands:
+     <dl>
+<a name="egg_002dstatus_002dbuffer_002dmode_002dmap"></a><dt><kbd>c</kbd><dd>Open the commit buffer for composing a message. 
+<a href="#egg_002dcommit_002dlog_002dedit">egg-commit-log-edit</a>
+<br><dt><kbd>C-u c</kbd><dd>The message will be use to amend the last commit. 
+<br><dt><kbd>C-u C-u c</kbd><dd>Just amend the last commit with the old message. 
+<br><dt><kbd>d</kbd><dd>Prompt a revision to compare against worktree. 
+<a href="#egg_002ddiff_002dref">egg-diff-ref</a>
+<br><dt><kbd>l</kbd><dd>Show the commit DAG of a ref. 
+<a href="#egg_002dlog">egg-log</a>
+<br><dt><kbd>o</kbd><dd>Prompt a revision to checkout. 
+<a href="#egg_002dstatus_002dbuffer_002dcheckout_002dref">egg-status-buffer-checkout-ref</a>
+<br><dt><kbd>w</kbd><dd>Stash current work-in-progress in the <span class="sc">WorkTree</span> and the <span class="sc">Index</span>. 
+<a href="#egg_002dstatus_002dbuffer_002dstash_002dwip">egg-status-buffer-stash-wip</a>
+<br><dt><kbd>L</kbd><dd>Show commit DAG of the current branch (or a ref) and its reflogs. 
+<a href="#egg_002dreflog">egg-reflog</a>
+<br><dt><kbd>S</kbd><dd>Stage all tracked files in the repository. 
+<a href="#egg_002dstage_002dall_002dfiles">egg-stage-all-files</a>
+<br><dt><kbd>U</kbd><dd>Unstage all files in the index. 
+<a href="#egg_002dunstage_002dall_002dfiles">egg-unstage-all-files</a>
+<br><dt><kbd>C-c C-h</kbd><dd>Hide all sections in current special egg buffer. 
+<a href="#egg_002dbuffer_002dhide_002dall">egg-buffer-hide-all</a>
+<br><dt><kbd>C-u C-c C-h</kbd><dd>Show all sections in current special egg buffer. 
+<br><dt><kbd>X</kbd><dd>When in the status buffer, throw away local modifications in the work-tree. 
+<br><dt><kbd>C-u X</kbd><dd>When in the status buffer, throw all (staged and unstaged) modifications. 
+<a href="#egg_002dstatus_002dbuffer_002dundo_002dwdir">egg-status-buffer-undo-wdir</a>
+</dl>
+
+<p>When the repo is in mid-rebase (due to conflicts or editings), there are
+extra commands bound in the Status Buffer:
+     <dl>
+<dt><kbd>x</kbd><dd>Abort the current rebase session. 
+<a href="#egg_002dbuffer_002drebase_002dabort">egg-buffer-rebase-abort</a>
+<br><dt><kbd>u</kbd><dd>Skip the current commit and continue the current rebase session. 
+<a href="#egg_002dbuffer_002dselective_002drebase_002dskip">egg-buffer-selective-rebase-skip</a>
+<br><dt><kbd>RET</kbd><dd>Continue the current rebase session. 
+<a href="#egg_002dbuffer_002dselective_002drebase_002dcontinue">egg-buffer-selective-rebase-continue</a>
+</dl>
+
+<p>Due to the context-sensitve nature of Egg, position the cursor on the
+<em>repo</em> section of the Status Buffer before issueing the above
+commands. It's to avoid the context-sensitve bindings of the sections
+from taking over. For example, if the cursor was in the repo sectionk
+<kbd>RET</kbd> would be non-context-sensitively bound to
+<a href="#egg_002dbuffer_002dselective_002drebase_002dcontinue">egg-buffer-selective-rebase-continue</a>. However, if the cursor was
+on top of a hunk section, <kbd>RET</kbd> would be context-sensitively bound
+to <a href="#egg_002dhunk_002dsection_002dcmd_002dvisit_002dfile_002dother_002dwindow">egg-hunk-section-cmd-visit-file-other-window</a>.
+
+<p>To see the context binding of the current cursor's location, type
+<kbd>kp-enter</kbd>, See <a href="#Context-Menu">Context Menu</a>.
+
+<h3 class="unnumberedsec">Unstaged or Unmerged Changes</h3>
+
+<p><a name="unstaged_002ddiff_002dsection"></a>Normally, the Unstaged Section shows the difference between the Index
+and the WorkTree. In this case, the diff, if present, would be
+a regular diff sequence. If the repo is in mid-merge (due to conflict),
+the diff, if present, would be a combined-diff sequence. Sometimes, there
+would be empty combined-diff deltas. Those are the files where conflicts
+were resolved but the files were not yet added to the Index.
+
+<h3 class="heading">Diff</h3>
+
+<p>Context bindings for all types of the diff header:
+all Section commands (<a href="#egg_002dsection_002dmap">egg-section-map</a>), plus
+     <dl>
+<a name="egg_002ddiff_002dsection_002dmap"></a><dt><kbd>RET</kbd><dd>Visit file the current file in other window. 
+<a href="#egg_002ddiff_002dsection_002dcmd_002dvisit_002dfile_002dother_002dwindow">egg-diff-section-cmd-visit-file-other-window</a>
+<br><dt><kbd>f</kbd><dd>Visit file the current file. 
+<a href="#egg_002ddiff_002dsection_002dcmd_002dvisit_002dfile">egg-diff-section-cmd-visit-file</a>
+<br><dt><kbd>=</kbd><dd>Ediff src and dest versions of the current file based on the diff at POS. 
+<a href="#egg_002ddiff_002dsection_002dcmd_002dediff">egg-diff-section-cmd-ediff</a>
+</dl>
+
+<h3 class="heading">Unstaged Diff</h3>
+
+<p>Context bindings for an <em>unstaged</em> diff header:
+all Diff Section commands (<a href="#egg_002ddiff_002dsection_002dmap">egg-diff-section-map</a>), plus
+     <dl>
+<a name="egg_002dunstaged_002ddiff_002dsection_002dmap"></a><dt><kbd>u</kbd><dd>Checkout the contents of the current file from the Index. 
+<a href="#egg_002ddiff_002dsection_002dcmd_002dundo">egg-diff-section-cmd-undo</a>
+<br><dt><kbd>=</kbd><dd>Compare the current file and its staged contents using ediff. 
+<a href="#egg_002dunstaged_002dsection_002dcmd_002dediff">egg-unstaged-section-cmd-ediff</a>
+<br><dt><kbd>s</kbd><dd>Update the Index with the file. 
+<a href="#egg_002ddiff_002dsection_002dcmd_002dstage">egg-diff-section-cmd-stage</a>
+<br><dt><kbd>DEL</kbd><dd>Revert the file and its slot in the index to its contents in HEAD. 
+<a href="#egg_002ddiff_002dsection_002dcmd_002drevert_002dto_002dhead">egg-diff-section-cmd-revert-to-head</a>
+</dl>
+
+<h3 class="heading">Unmerged Diff</h3>
+
+<p>Context bindings for an <em>unmerged</em> diff header:
+all Unstaged Diff Section commands (<a href="#egg_002dunstaged_002ddiff_002dsection_002dmap">egg-unstaged-diff-section-map</a>), plus
+     <dl>
+<dt><kbd>=</kbd><dd>Run ediff3 to resolve merge conflicts in the current file. 
+<a href="#egg_002dunmerged_002dsection_002dcmd_002dediff3">egg-unmerged-section-cmd-ediff3</a>
+</dl>
+
+<h3 class="heading">Hunk</h3>
+
+<p>Context bindings for all types of the hunk:
+all Section commands (<a href="#egg_002dsection_002dmap">egg-section-map</a>), plus
+     <dl>
+<a name="egg_002dhunk_002dsection_002dmap"></a><dt><kbd>RET</kbd><dd>Visit the current file in other-window and goto the current line of the hunk. 
+<a href="#egg_002dhunk_002dsection_002dcmd_002dvisit_002dfile_002dother_002dwindow">egg-hunk-section-cmd-visit-file-other-window</a>
+<br><dt><kbd>=</kbd><dd>Ediff src and dest versions of the current file based on the diff under the cursor. 
+<a href="#egg_002ddiff_002dsection_002dcmd_002dediff">egg-diff-section-cmd-ediff</a>
+<br><dt><kbd>f</kbd><dd>Visit the current file and goto the current line of the hunk. 
+<a href="#egg_002dhunk_002dsection_002dcmd_002dvisit_002dfile">egg-hunk-section-cmd-visit-file</a>
+</dl>
+
+<h3 class="heading">Unstaged Hunk</h3>
+
+<p>Context bindings for an unstaged hunk:
+all Hunk commands (<a href="#egg_002dhunk_002dsection_002dmap">egg-hunk-section-map</a>), plus
+     <dl>
+<a name="egg_002dunstaged_002dhunk_002dsection_002dmap"></a><dt><kbd>u</kbd><dd>Remove the file's modification described by the hunk under the cursor. 
+<a href="#egg_002dhunk_002dsection_002dcmd_002dundo">egg-hunk-section-cmd-undo</a>
+<br><dt><kbd>=</kbd><dd>Compare the current file and its staged copy using ediff. 
+<a href="#egg_002dunstaged_002dsection_002dcmd_002dediff">egg-unstaged-section-cmd-ediff</a>
+<br><dt><kbd>s</kbd><dd>Add the hunk under the cursor to the index. 
+<a href="#egg_002dhunk_002dsection_002dcmd_002dstage">egg-hunk-section-cmd-stage</a>
+</dl>
+
+<h3 class="heading">Unmerged Hunk</h3>
+
+<p>Context bindings for an unmerged hunk:
+all Unstaged Hunk commands (<a href="#egg_002dunstaged_002dhunk_002dsection_002dmap">egg-unstaged-hunk-section-map</a>), plus
+     <dl>
+<a name="egg_002dunmerged_002dhunk_002dsection_002dmap"></a><dt><kbd>=</kbd><dd>Run ediff3 to resolve merge conflicts in the current file. 
+<a href="#egg_002dunmerged_002dsection_002dcmd_002dediff3">egg-unmerged-section-cmd-ediff3</a>
+</dl>
+
+<h3 class="heading">Unmerged Conflict</h3>
+
+<p>This is conflict section inside an unmerged hunk. It's marked by git with the
+strings: <tt>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</tt>, <tt>=======</tt> and <tt>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</tt>. The context bindings for this
+section included all commands Unstaged Hunk commands (<a href="#egg_002dunstaged_002dhunk_002dsection_002dmap">egg-unstaged-hunk-section-map</a>),
+plus
+     <dl>
+<a name="egg_002dunmerged_002dconflict_002dmap"></a><dt><kbd>m</kbd><dd>interactively resolve the conflict under the cursor. 
+<a href="#egg_002dunmerged_002dconflict_002dtake_002dside">egg-unmerged-conflict-take-side</a>
+<br><dt><kbd>M</kbd><dd>choose one side (<em>ours</em> or <em>theirs</em>) of the conflict to resolved the
+whole file. (<tt>git checkout &ndash;ours</tt> or<tt>git checkout &ndash;theirs</tt>. 
+<a href="#egg_002dunmerged_002dconflict_002dcheckout_002dside">egg-unmerged-conflict-checkout-side</a>
+</dl>
+
+<h3 class="unnumberedsec">Staged or Merged Changes</h3>
+
+<p><a name="staged_002ddiff_002dsection"></a>The Staged Section shows the difference between HEAD and the Index. 
+It also show unmerged entries: WorkTree's files that have conflicts or
+those with resolved conflicts but not added into the Index. The delta
+in the Staged Section are always of the regular diff.
+
+<h3 class="heading">Staged Diff</h3>
+
+<p>Context bindings for an <em>staged</em> diff header:
+all Diff Section commands (<a href="#egg_002ddiff_002dsection_002dmap">egg-diff-section-map</a>), plus
+     <dl>
+<dt><kbd>=</kbd><dd>Compare the WorkTree's file, its contents in the Index and in HEAD, using 3-way ediff. 
+<a href="#egg_002dstaged_002dsection_002dcmd_002dediff3">egg-staged-section-cmd-ediff3</a>
+<br><dt><kbd>s</kbd><dd>For the file under the cursor, revert its contents in the Index to HEAD's. 
+<a href="#egg_002ddiff_002dsection_002dcmd_002dunstage">egg-diff-section-cmd-unstage</a>
+<br><dt><kbd>DEL</kbd><dd>Revert the file and its slot in the index to its contents in HEAD. 
+<a href="#egg_002ddiff_002dsection_002dcmd_002drevert_002dto_002dhead">egg-diff-section-cmd-revert-to-head</a>
+</dl>
+
+<h3 class="unnumberedsec">The Untracked Section</h3>
+
+<p>This simple section lists the untracked and <em>unignored</em> files in
+the repository. Its purpose is to catch files that one forgot to add
+into the Index. Context bindings for the untracked section:
+all Section commands (<a href="#egg_002dsection_002dmap">egg-section-map</a>), plus
+
+     <dl>
+<dt><kbd>DEL</kbd><dd>Add an ignore pattern based on the string at point. 
+<a href="#egg_002dignore_002dpattern_002dfrom_002dstring_002dat_002dpoint">egg-ignore-pattern-from-string-at-point</a>
+<br><dt><kbd>s</kbd><dd>add untracked file(s) to the repository
+<a href="#egg_002dstatus_002dbuffer_002dstage_002duntracked_002dfile">egg-status-buffer-stage-untracked-file</a>
+</dl>
+
+<h3 class="unnumberedsec">The Stash Section</h3>
+
+<p><a name="stash"></a>This section displays the stashed WIPs. The context bindings for the stash
+section: all Section command (<a href="#egg_002dsection_002dmap">egg-section-map</a>), plus:
+     <dl>
+<dt><kbd>SPC</kbd><dd>Load the show the details of the stashed WIP under the cursor. 
+<a href="#egg_002dsb_002dbuffer_002dshow_002dstash">egg-sb-buffer-show-stash</a>
+<br><dt><kbd>RET</kbd><dd>Apply the stashed WIP under the cursor to WorkTree and Index. 
+<a href="#egg_002dsb_002dbuffer_002dapply_002dstash">egg-sb-buffer-apply-stash</a>
+<br><dt><kbd>a</kbd><dd>Apply the stashed WIP under the cursor to WorkTree and Index. 
+<a href="#egg_002dsb_002dbuffer_002dapply_002dstash">egg-sb-buffer-apply-stash</a>
+<br><dt><kbd>DEL</kbd><dd>Drop the stashed WIP under the cursor. 
+<a href="#egg_002dsb_002dbuffer_002ddrop_002dstash">egg-sb-buffer-drop-stash</a>
+<br><dt><kbd>o</kbd><dd>Pop and apply the stash under the cursor to WorkTree and Index.. 
+<a href="#egg_002dsb_002dbuffer_002dpop_002dstash">egg-sb-buffer-pop-stash</a>
+</dl>
+
+<p>TBD: binding for the stash's contents.
+
+<div class="node">
+<a name="Commit"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Log">Log</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Status">Status</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Commit Buffer</h2>
+
+<p>This special buffer is for composing a commit log message. It has a
+heading section decribing information about the next commit:
+     <ul>
+<li>the branch to commit into
+<li>the repository
+<li>the commiter
+<li>the gpg key if the commit is to be signed. 
+</ul>
+Following the heading section is the text area. The user should compose the
+log message in here. This section use text-mode's keymap with the following
+extra bindings:
+     <dl>
+<dt><kbd>C-c C-k</kbd><dd>Cancel composing the message. 
+<a href="#egg_002dlog_002dmsg_002dcancel">egg-log-msg-cancel</a>
+<br><dt><kbd>C-c C-s</kbd><dd>Toggle the gpg-signed status of the message. 
+<a href="#egg_002dlog_002dmsg_002dbuffer_002dtoggle_002dsigned">egg-log-msg-buffer-toggle-signed</a>
+<br><dt><kbd>C-c C-c</kbd><dd>Done editing, proceed with commiting. 
+<a href="#egg_002dlog_002dmsg_002ddone">egg-log-msg-done</a>
+</dl>
+
+<p>After the the text-area is the 3 sections: staged, unstaged and
+untracked.  Here, they are called respectively: <span class="sc">Changes to Commit</span>,
+<span class="sc">Deferred Changes</span> and <span class="sc">Untracked Files</span>. The context bindings are
+identical to same sections in the Status Buffer, See <a href="#Status">Status</a>.
+
+<div class="node">
+<a name="Log"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Blame">Blame</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Commit">Commit</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Log Buffer</h2>
+
+<p><a href="#egg_002dlog">egg-log</a>, <a href="#egg_002dfile_002dlog">egg-file-log</a> and <a href="#egg_002dreflog">egg-reflog</a> are three of the
+different way of launching the <span class="sc">Log Buffer</span>. This buffer shows a
+list of commits, usually forming a DAG. In the regular cycle:
+edit-add-commit, commits are added to the current branch in a linear
+fashion. However, with rebase, amending and reset, the branch's head can
+move in a non-linear manner and previous commits where it used to point
+at might no longer reachable from the latest commit. That's why git's
+<span class="sc">Reflog</span> is so important, it shows the previous incarnations of a
+ref. Those previous incarnations are commits that might not be reachable
+by walking history from the latest commit. Realizing that importance,
+<span class="sc">Egg</span>'s <span class="sc">Log Buffer</span> was designed to show both the combined DAG
+and branch (or a ref) and its reflogs.
+
+<p>When launch without any prefix, <code>egg-log</code> will show the combined
+DAG of the current branch (or HEAD) and its reflogs. With <kbd>C-u</kbd>
+prefix, the buffer will show the combined DAG of all the refs in the
+repository (without the reflogs). With <kbd>C-u C-u</kbd> prefix, the
+command will prompt for a ref then show the combined DAG of that ref
+and its reflogs.
+
+<p>The buffer is composed of the repo section including the help
+subsection and the DAG section where almost every line describes a
+commit. The refs that point at the commit are listed on the commit's
+line. The details of a commit, i.e. the diffs, can be loaded with
+&lt;SPC&gt; (<a href="#egg_002dlog_002dbuffer_002dinsert_002dcommit">egg-log-buffer-insert-commit</a>). As with the Status
+Buffer, the hide/show and the navigation commands work the same way
+here See <a href="#Status">Status</a>. The <span class="sc">Status Buffer</span> was designed
+primarily to deal with the index, the <span class="sc">Log Buffer</span>, on the other
+hand, was intended for actions that operate on the DAG. Most commands
+in the Log Buffer are context sensitive. Their behaviour depends on
+the current location of the cursor. In the DAG section of buffer,
+almost every line described a commit (Egg calls it a commit line.) 
+Thus, most commands in the buffer act upon the commit described on the
+line under the cursor.  However, if the cursor was on a ref name (a
+branch, a tag, a remote or a reflog), many commands will operate upon
+the ref instead of the commit.
+
+<p>There also minor variants of the <span class="sc">Log Buffer</span>, examples:
+     <ul>
+<li>the File's history where the buffer only displays the DAG's commits
+modifying the file. 
+<li>the <span class="sc">Query Buffer</span>, this buffer display the results of a
+<em>pickaxe</em> search. The commits are only those introducing or
+removing a term where <em>term</em> can be a string, a regexp or a line. 
+</ul>
+
+<h3 class="heading">Moving HEAD</h3>
+
+     <dl>
+<dt><kbd>o</kbd><dd>Checkout. This key will checkout... something. If the cursor was on a
+branch-name, then Egg will checkout that branch. HEAD will be symbolic. 
+On the other hand, the cursor was on simple commit line or on a non-branch
+ref such as a tag or a remote-tracking branch, Egg will detach HEAD and
+checkout the commit. 
+<br><dt><kbd>a</kbd><dd>Anchor HEAD (Egg's weird name for <code>git reset</code>. If HEAD was attached (symbolic),
+then Egg will move the current branch to the new commit. If HEAD was detached,
+HEAD will be moved to the new commit (but still detached). 
+<br><dt><kbd>u</kbd><dd>push the current branch to the commit under the cursor. 
+</dl>
+
+<h3 class="heading">Creating REFs</h3>
+
+     <dl>
+<dt><kbd>t</kbd><dd>Tag the commit under the cursor. 
+<br><dt><kbd>T</kbd><dd>Create an annotated tag pointing to the commit under the  cursor. 
+<br><dt><kbd>B</kbd><dd>Create a new branch pointing to the commit under the cursor. 
+<br><dt><kbd>b</kbd><dd>Start (checkout) a new branch poiting to the commit under the cursor. 
+</dl>
+
+<h3 class="heading">Merging Changes</h3>
+
+     <dl>
+<dt><kbd>m</kbd><dd>Merge the chain of commits starting at the one under the cursor into HEAD. 
+<br><dt><kbd>r</kbd><dd>rebase the current branch on to the commit under the cursor. 
+<br><dt><kbd>c</kbd><dd>pick the <em>one and only one</em> commit under the cursor and put it on HEAD. 
+<br><dt><kbd>M-x egg-log-buffer-do-revert-rev</kbd><dd>undo the changes introduced by <em>the</em> commit under the cursor. 
+<br><dt><kbd>r</kbd><dd>rebase the current branch onto the commit under the cursor. 
+<br><dt><kbd>R</kbd><dd>rebase the chain of <em>marked commits</em> of the current branch onto the commit
+under the cursor. 
+</dl>
+
+<h3 class="heading">Marking Commits for interactive rebase</h3>
+
+<p>Before starting an interactive rebase, at least one commits should be marked.
+     <dl>
+<dt><kbd>+</kbd><dd>mark the commit under the cursor to be picked in the <em>upcoming</em> interactive
+rebase. 
+<br><dt><kbd>~</kbd><dd>mark the commit under the cursor to be edited in the <em>upcoming</em> interactive
+rebase. 
+<br><dt><kbd>.</kbd><dd>mark the commit under the cursor to be squashed in the <em>upcoming</em> interactive
+rebase. 
+</dl>
+Using <kbd>C-u</kbd> prefix with the mark commands, one can reorder the commits
+in the rebase. In this case, pressing <kbd>g</kbd> to refresh the <span class="sc">Log Buffer</span> will
+display the reordered to-be-rebased sequence of commits at the top of the buffer,
+right after the Help section.
+
+<h3 class="heading">Pushing and Fetching</h3>
+
+     <dl>
+<dt><kbd>U</kbd><dd>Uploading (pushing) to a remote site. If the cursor was on a branch and the branch
+has an defined upstream, Egg will push the branch to the remote site of the upstream
+branch. If the branch has no defined usptream, Egg will prompt the user for a remote
+site to push it to. If the cursor was on a remote <em>site</em> (i.e. the <em>site</em> part
+in the site/branch name), Egg will prompt for a ref (branch or tag) to push to that
+remote site. 
+<br><dt><kbd>D</kbd><dd>Download (fetching) from a remote site. If the cursor was on a remote
+tracking <em>branch</em> (i.e. the branch part of a site/branch
+name). Egg will attempt to fetch the remote branch from that site. If
+the cursor was on remote <em>site</em> (i.e. the <em>site</em> part of the site/branch
+name), Egg will prompt for a ref to fetch (or all) from that remote site. 
+</dl>
+
+<h3 class="unnumberedsec">Summary</h3>
+
+<p>All <em>log-style</em> buffers have the following bindings:
+All buffer bindings describe in <a href="#egg_002dbuffer_002dmode_002dmap">egg-buffer-mode-map</a>, plus
+     <dl>
+<a name="egg_002dlog_002dbuffer_002dbase_002dmap"></a><dt><kbd>n</kbd><dd>Move cursor to the next ref. 
+<a href="#egg_002dlog_002dbuffer_002dnext_002dref">egg-log-buffer-next-ref</a>
+<br><dt><kbd>p</kbd><dd>Move cursor to the previous ref. 
+<a href="#egg_002dlog_002dbuffer_002dprev_002dref">egg-log-buffer-prev-ref</a>
+<br><dt><kbd>s</kbd><dd>Show the status of the current repo. 
+<a href="#egg_002dstatus">egg-status</a>
+</dl>
+The log buffer have the following bindings:
+All buffer bindings describe in <a href="#egg_002dlog_002dbuffer_002dbase_002dmap">egg-log-buffer-base-map</a>, plus
+     <dl>
+<dt><kbd>L</kbd><dd>Show reflogs for the ref under the cursor
+<a href="#egg_002dlog_002dbuffer_002dreflog_002dref">egg-log-buffer-reflog-ref</a>
+<br><dt><kbd>/</kbd><dd>Search the current branch's history for changes introducing/removing a term. 
+<a href="#egg_002dsearch_002dchanges">egg-search-changes</a>
+</dl>
+
+<p>A commit line, whether in the main <span class="sc">Log Buffer</span> or in one of the
+log-style buffers, has the following context bindings: all section
+commands as described in <a href="#egg_002dsection_002dmap">egg-section-map</a>, plus
+     <dl>
+<a name="egg_002dlog_002dcommit_002dbase_002dmap"></a><dt><kbd>SPC</kbd><dd>Load and show the details of commit under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002dinsert_002dcommit">egg-log-buffer-insert-commit</a>
+<br><dt><kbd>B</kbd><dd>Create a new branch pointing to commit under the cursor, without checking it out. 
+<a href="#egg_002dlog_002dbuffer_002dcreate_002dnew_002dbranch">egg-log-buffer-create-new-branch</a>
+<br><dt><kbd>C-u B</kbd><dd>Force the branch creation by deleting the old one with the same name. 
+<br><dt><kbd>b</kbd><dd>Create a new branch pointing to commit under the cursor, and make it the new HEAD. 
+<a href="#egg_002dlog_002dbuffer_002dstart_002dnew_002dbranch">egg-log-buffer-start-new-branch</a>
+<br><dt><kbd>C-u b</kbd><dd>Force the creation by deleting the old branch with the same name. 
+<br><dt><kbd>o</kbd><dd>Checkout ref or commit under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002dcheckout_002dcommit">egg-log-buffer-checkout-commit</a>
+<br><dt><kbd>C-u o</kbd><dd>Force the checkout even if the index was different
+<br><dt><kbd>t</kbd><dd>Tag commit under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002dtag_002dcommit">egg-log-buffer-tag-commit</a>
+<br><dt><kbd>C-u t</kbd><dd>Force the creation of the tag
+<br><dt><kbd>T</kbd><dd>Start composing the message to create an annotated tag on commit under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002datag_002dcommit">egg-log-buffer-atag-commit</a>
+<br><dt><kbd>C-u T</kbd><dd>The annotated tag will be gpg-signed. 
+<br><dt><kbd>a</kbd><dd>Move the current branch or the detached HEAD to commit under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002danchor_002dhead">egg-log-buffer-anchor-head</a>
+<br><dt><kbd>C-u a</kbd><dd>HEAD will be moved, index will be reset and the work tree updated. 
+<br><dt><kbd>C-u C-u a</kbd><dd>Prompt for the git reset mode to perform. 
+<br><dt><kbd>m</kbd><dd>Merge to HEAD the path starting from commit under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002dmerge">egg-log-buffer-merge</a>
+<br><dt><kbd>C-u m</kbd><dd>Do not auto commit the merge result. 
+<br><dt><kbd>C-u C-u m</kbd><dd>Prompt the user for the type of merge to perform. 
+<br><dt><kbd>r</kbd><dd>Rebase HEAD using commit under the cursor as upstream. 
+<a href="#egg_002dlog_002dbuffer_002drebase">egg-log-buffer-rebase</a>
+<br><dt><kbd>c</kbd><dd>Pick commit under the cursor and put on HEAD. 
+<a href="#egg_002dlog_002dbuffer_002dpick_002d1cherry">egg-log-buffer-pick-1cherry</a>
+<br><dt><kbd>C-u c</kbd><dd>Will not auto-commit but let the user re-compose the message. 
+<br><dt><kbd>i</kbd><dd>Show information about the ref or the mark under the cursor. 
+<a href="#egg_002dlog_002dshow_002dref">egg-log-show-ref</a>
+</dl>
+
+<p>In the main <span class="sc">Log Buffer</span>, a commit line has the additional
+context bindings:
+     <dl>
+<a name="egg_002dlog_002dcommit_002dmap"></a><dt><kbd>R</kbd><dd>Start an interactive session to rebase the marked commits onto commit under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002drebase_002dinteractive">egg-log-buffer-rebase-interactive</a>
+<br><dt><kbd>+</kbd><dd>Mark commit under the cursor to be picked in the upcoming interactive rebase. 
+<a href="#egg_002dlog_002dbuffer_002dmark_002dpick">egg-log-buffer-mark-pick</a>
+<br><dt><kbd>C-u +</kbd><dd>Prompt for reordering. 
+<br><dt><kbd>.</kbd><dd>Mark commit under the cursor to be squashed in the upcoming interactive rebase. 
+<a href="#egg_002dlog_002dbuffer_002dmark_002dsquash">egg-log-buffer-mark-squash</a>
+<br><dt><kbd>C-u .</kbd><dd>Prompt for reordering. 
+<br><dt><kbd>~</kbd><dd>Mark commit under the cursor to be edited in the upcoming interactive rebase. 
+<a href="#egg_002dlog_002dbuffer_002dmark_002dedit">egg-log-buffer-mark-edit</a>
+<br><dt><kbd>C-u ~</kbd><dd>Prompt for reordering. 
+<br><dt><kbd>DEL</kbd><dd>Unmark commit under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002dunmark">egg-log-buffer-unmark</a>
+<br><dt><kbd>C-u DEL</kbd><dd>Unmark all. 
+<br><dt><kbd>*</kbd><dd>Mark commit under the cursor as the BASE commit. 
+<a href="#egg_002dlog_002dbuffer_002dmark">egg-log-buffer-mark</a>
+<br><dt><kbd>=</kbd><dd>Compare HEAD against commit under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002ddiff_002drevs">egg-log-buffer-diff-revs</a>
+<br><dt><kbd>C-u =</kbd><dd>Prompt for a string and restrict to diffs introducing/removing it. 
+<br><dt><kbd>C-u C-u =</kbd><dd>Prompt for a regexp and restrict to diffs introducing/removing it. 
+<br><dt><kbd>C-u C-u C-u =</kbd><dd>Prompt for a pickaxe mode. 
+<br><dt><kbd>u</kbd><dd>Push commit under the cursor onto HEAD. 
+<a href="#egg_002dlog_002dbuffer_002dpush_002dto_002dlocal">egg-log-buffer-push-to-local</a>
+<br><dt><kbd>C-u u</kbd><dd>Instead of HEAD, prompt for another ref as destination. 
+<br><dt><kbd>C-u C-u u</kbd><dd>Will force the push evel if it would be non-ff. 
+</dl>
+
+<p>A ref has all the context bindings of the commit line (<a href="#egg_002dlog_002dcommit_002dmap">egg-log-commit-map</a>), plus
+     <dl>
+<a name="egg_002dlog_002dlocal_002dref_002dmap"></a><dt><kbd>L</kbd><dd>Show reflogs for the ref under the cursor
+<a href="#egg_002dlog_002dbuffer_002dreflog_002dref">egg-log-buffer-reflog-ref</a>
+<br><dt><kbd>x</kbd><dd>Remove the ref under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002drm_002dref">egg-log-buffer-rm-ref</a>
+<br><dt><kbd>U</kbd><dd>Upload the ref under the cursor to a remote repository. 
+<a href="#egg_002dlog_002dbuffer_002dpush_002dto_002dremote">egg-log-buffer-push-to-remote</a>
+<br><dt><kbd>d</kbd><dd>Push HEAD to the ref under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002dpush_002dhead_002dto_002dlocal">egg-log-buffer-push-head-to-local</a>
+</dl>
+
+<p>A local branch has all context bindings of a local ref (<a href="#egg_002dlog_002dlocal_002dref_002dmap">egg-log-local-ref-map</a>), plus
+     <dl>
+<a name="egg_002dlog_002dlocal_002dbranch_002dmap"></a><dt><kbd>C-c C-=</kbd><dd>Compare the branch under the cursor against its upstream
+<a href="#egg_002dlog_002dbuffer_002ddiff_002dupstream">egg-log-buffer-diff-upstream</a>
+<br><dt><kbd>C-u C-c C-=</kbd><dd>Prompt for a string and restrict to diffs introducing/removing it. 
+<br><dt><kbd>C-u C-u C-c C-=</kbd><dd>Prompt for a regexp and restrict to diffs introducing/removing it. 
+<br><dt><kbd>C-u C-u C-u C-c C-=</kbd><dd>Prompt for a pickaxe mode. 
+</dl>
+
+<p>A remote tracking branch has all the context bindings of the commit line (<a href="#egg_002dlog_002dcommit_002dmap">egg-log-commit-map</a>), plus
+     <dl>
+<a name="egg_002dlog_002dremote_002dbranch_002dmap"></a><dt><kbd>L</kbd><dd>Show reflogs for the remote branch under the cursor
+<a href="#egg_002dlog_002dbuffer_002dreflog_002dref">egg-log-buffer-reflog-ref</a>
+<br><dt><kbd>x</kbd><dd>Remove the remote branch under the cursor. Egg will ask if it should attempt to delete
+the branch on the remote site as well. 
+<a href="#egg_002dlog_002dbuffer_002drm_002dref">egg-log-buffer-rm-ref</a>
+<br><dt><kbd>D</kbd><dd>Download and update the remote tracking branch under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002dfetch_002dremote_002dref">egg-log-buffer-fetch-remote-ref</a>
+</dl>
+
+<p>A remote site (it's the <em>site</em> part in a site/branch ref name) has
+all the context bindings of the commit line (<a href="#egg_002dlog_002dcommit_002dmap">egg-log-commit-map</a>), plus
+     <dl>
+<a name="egg_002dlog_002dremote_002dsite_002dmap"></a><dt><kbd>D</kbd><dd>Prompt for the refs to fetch the remote site under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002dfetch">egg-log-buffer-fetch</a>
+<br><dt><kbd>U</kbd><dd>Prompt for the ref to push to the remote site under the cursor. 
+<a href="#egg_002dlog_002dbuffer_002dpush">egg-log-buffer-push</a>
+</dl>
+
+<div class="node">
+<a name="Blame"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Resolving-Conflicts">Resolving Conflicts</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Log">Log</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Blame Mode</h2>
+
+<p><a name="egg_002dfile_002dtoggle_002dblame_002dmode"></a>
+
+<h3 class="unnumberedsec">Pointing Finger</h3>
+
+<p><kbd>C-x v a</kbd> (<a href="#egg_002dfile_002dtoggle_002dblame_002dmode">egg-file-toggle-blame-mode</a>), will bring the
+current buffer in-or-out of annotation-mode, or more accurately,
+<em>blame mode</em>. In blame-mode, editing is disabled (the buffer is
+in read-only mode). Block of lines are prefix with a header describing
+the <em>last</em> commit that modified those lines. The command
+<code>egg-blame-locate-commit</code> pick up that commit, open the <span class="sc">Log
+Buffer</span> and locate that commit in the DAG.
+
+<p>The context bindings in blame mode are:
+     <dl>
+<a name="egg_002dblame_002dmap"></a><a href="#egg_002dblame_002dlocate_002dcommit">egg-blame-locate-commit</a>
+<dt><kbd>RET</kbd><dd>Jump to a commit in the branch history from an annotated blame section. 
+<a href="#egg_002dblame_002dlocate_002dcommit">egg-blame-locate-commit</a>
+<br><dt><kbd>q</kbd><dd>Toggle blame mode for the current-file. 
+<a href="#egg_002dfile_002dtoggle_002dblame_002dmode">egg-file-toggle-blame-mode</a>
+<br><dt><kbd>n</kbd><dd>Move to the next annotation. 
+<a href="#egg_002dbuffer_002dcmd_002dnavigate_002dnext">egg-buffer-cmd-navigate-next</a>
+<br><dt><kbd>p</kbd><dd>Move to the previous annotation. 
+</dl>
+
+<div class="node">
+<a name="Resolving-Conflicts"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Customisations">Customisations</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Blame">Blame</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Resolving Conflicts</h2>
+
+<p>Conflicts resolution is done in the <span class="sc">Status Buffer</span>. First put the cursor
+on top of the conflict area, ie. the text between the <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>. 
+Then there 3 ways of performing a conflict resolution
+     <dl>
+<dt><span class="sc">The Git Way</span><dd>Press RET, and git will open the file and locate the conflict. Edit the conflict and remove the
+<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> markers.
+
+     <br><dt><span class="sc">The Simple (Egg) Way</span><dd>Press <kbd>m</kbd> on the conflict. Egg will ask the user to choose either,
+<em>ours</em>'s changes or <em>theirs</em>'s changes. The first choice
+depends on the location of the cursor. If the <kbd>m</kbd> was press on
+<em>ours</em>'s side (i.e. between <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> and <code>=======</code>,
+the <em>ours</em> will be the first choice. Otherwise, <em>theirs</em>'s
+changes will be the first choice.
+
+     <br><dt><span class="sc">The Heavy (Ediff) Way</span><dd>Press <kbd>=</kbd> on the conflict. Egg will launch <code>ediff3</code> to help
+resolving the conflict. If it was a merge operation, the buffers (from left-to-right or
+top-to-bottom, depending on the value of <code>ediff-split-window-function</code>) are:
+          <ul>
+<li>theirs (the branch being merged in)
+<li>ours (the current branch)
+<li>WorkTree's file (with conflicts)
+</ul>
+
+     <p>If it was a rebase operation, the buffers are:
+          <ul>
+<li>ours (the upstream or <em>onto</em> branch)
+<li>theirs (the branch being rebased)
+<li>WorkTree's file (with conflicts)
+</ul>
+     </dl>
+
+<p>After resolving the conflict, add the file into the Index by pressing <kbd>s</kbd> on the
+diff header in the <span class="sc">Status Buffer</span>'s Unmerged Section.
+
+<div class="node">
+<a name="Customisations"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Commands">Commands</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Resolving-Conflicts">Resolving Conflicts</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Customisations</h2>
+
+<div class="defun">
+&mdash; User Option: <b>egg-buffer-hide-sub-blocks-on-start</b><var><a name="index-egg_002dbuffer_002dhide_002dsub_002dblocks_002don_002dstart-1"></a></var><br>
+<blockquote><p><a name="egg_002dbuffer_002dhide_002dsub_002dblocks_002don_002dstart"></a>For each type of egg special buffers, should its sub-blocks be initially hidden. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; User Option: <b>egg-buffer-hide-section-type-on-start</b><var><a name="index-egg_002dbuffer_002dhide_002dsection_002dtype_002don_002dstart-2"></a></var><br>
+<blockquote><p><a name="egg_002dbuffer_002dhide_002dsection_002dtype_002don_002dstart"></a>For each type of egg special buffers that show sequence of diffs, control the types of
+sub-block to be initially hidden. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; User Option: <b>egg-buffer-hide-help-on-start</b><var><a name="index-egg_002dbuffer_002dhide_002dhelp_002don_002dstart-3"></a></var><br>
+<blockquote><p><a name="egg_002dbuffer_002dhide_002dhelp_002don_002dstart"></a>For each type of egg special buffers has a help section, should the help section
+be initially hidden. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; User Option: <b>egg-status-buffer-sections</b><var><a name="index-egg_002dstatus_002dbuffer_002dsections-4"></a></var><br>
+<blockquote><p><a name="egg_002dstatus_002dbuffer_002dsections"></a>Select the sections that will be shown in the status buffer. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; User Option: <b>egg-show-key-help-in-buffers</b><var><a name="index-egg_002dshow_002dkey_002dhelp_002din_002dbuffers-5"></a></var><br>
+<blockquote><p><a name="egg_002dshow_002dkey_002dhelp_002din_002dbuffers"></a>For each type of egg special buffers, should the Help section be displayed. 
+</p></blockquote></div>
+
+<div class="node">
+<a name="Commands"></a>
+<p><hr>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Customisations">Customisations</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Commands</h2>
+
+<div class="defun">
+&mdash; Command: <b>egg-file-stage-current-file</b><var><a name="index-egg_002dfile_002dstage_002dcurrent_002dfile-6"></a></var><br>
+<blockquote><p><a name="egg_002dfile_002dstage_002dcurrent_002dfile"></a>Add the contents of the current file into the index. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-file-diff</b><var><a name="index-egg_002dfile_002ddiff-7"></a></var><br>
+<blockquote><p><a name="egg_002dfile_002ddiff"></a>Compare the file's current contents vs its contents in the index. With
+prefix, prompt for a revision to compare (instead of using the index)
+with the file's current contents. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-file-ediff</b><var><a name="index-egg_002dfile_002dediff-8"></a></var><br>
+<blockquote><p><a name="egg_002dfile_002dediff"></a>Compare the file's current contents vs its contents in the index. With
+prefix, prompt for a revision to compare (instead of using the index)
+with the file's current contents. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-file-version-other-window</b><var><a name="index-egg_002dfile_002dversion_002dother_002dwindow-9"></a></var><br>
+<blockquote><p><a name="egg_002dfile_002dversion_002dother_002dwindow"></a>Show the contents of the current file from the index. With prefix,
+prompt for a git revision and show the file's contents from that revision. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-file-checkout-other-version</b><var><a name="index-egg_002dfile_002dcheckout_002dother_002dversion-10"></a></var><br>
+<blockquote><p><a name="egg_002dfile_002dcheckout_002dother_002dversion"></a>Replace the file's current contents with its contents from a revision. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-file-cancel-modifications</b><var><a name="index-egg_002dfile_002dcancel_002dmodifications-11"></a></var><br>
+<blockquote><p><a name="egg_002dfile_002dcancel_002dmodifications"></a>Revert the file to its contents in the index. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-next-action</b><var><a name="index-egg_002dnext_002daction-12"></a></var><br>
+<blockquote><p><a name="egg_002dnext_002daction"></a>Perform the <em>next</em> action, whatever that is! 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-status</b><var><a name="index-egg_002dstatus-13"></a></var><br>
+<blockquote><p><a name="egg_002dstatus"></a>Show <span class="sc">Egg Status</span> buffer in another window but do not select it. With prefix, select
+the status buffer, See <a href="#Status">Status</a>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-buffer-hide-all</b><var><a name="index-egg_002dbuffer_002dhide_002dall-14"></a></var><br>
+<blockquote><p><a name="egg_002dbuffer_002dhide_002dall"></a>Hide all sections in buffer. With prefix, show all sections. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-buffer-cmd-navigate-next</b><var><a name="index-egg_002dbuffer_002dcmd_002dnavigate_002dnext-15"></a></var><br>
+<blockquote><p><a name="egg_002dbuffer_002dcmd_002dnavigate_002dnext"></a>Move cursor to the next section
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-buffer-cmd-navigate-prev</b><var><a name="index-egg_002dbuffer_002dcmd_002dnavigate_002dprev-16"></a></var><br>
+<blockquote><p><a name="egg_002dbuffer_002dcmd_002dnavigate_002dprev"></a>Move cursor to the previous section
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-section-cmd-toggle-hide-show</b><var><a name="index-egg_002dsection_002dcmd_002dtoggle_002dhide_002dshow-17"></a></var><br>
+<blockquote><p><a name="egg_002dsection_002dcmd_002dtoggle_002dhide_002dshow"></a>Toggle the visibility of the section under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-diff-section-cmd-undo</b><var><a name="index-egg_002ddiff_002dsection_002dcmd_002dundo-18"></a></var><br>
+<blockquote><p><a name="egg_002ddiff_002dsection_002dcmd_002dundo"></a>For the file of diff header under the cursor, remove its differences
+vs the source revision.  Usually, this command revert the file to its
+staged state in the index. However, in a diff special egg buffer, it
+can change the file's contents to the one of the source revision. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-unmerged-conflict-checkout-side</b><var><a name="index-egg_002dunmerged_002dconflict_002dcheckout_002dside-19"></a></var><br>
+<blockquote><p><a name="egg_002dunmerged_002dconflict_002dcheckout_002dside"></a>Checkout one side of the conflict under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-unmerged-conflict-take-side</b><var><a name="index-egg_002dunmerged_002dconflict_002dtake_002dside-20"></a></var><br>
+<blockquote><p><a name="egg_002dunmerged_002dconflict_002dtake_002dside"></a>Interactive resolve conflict under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-hunk-section-cmd-undo</b><var><a name="index-egg_002dhunk_002dsection_002dcmd_002dundo-21"></a></var><br>
+<blockquote><p><a name="egg_002dhunk_002dsection_002dcmd_002dundo"></a>Remove the file's modification described by the hunk under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-stage-all-files</b><var><a name="index-egg_002dstage_002dall_002dfiles-22"></a></var><br>
+<blockquote><p><a name="egg_002dstage_002dall_002dfiles"></a>Stage all tracked files in the repository. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-hunk-section-cmd-stage</b><var><a name="index-egg_002dhunk_002dsection_002dcmd_002dstage-23"></a></var><br>
+<blockquote><p><a name="egg_002dhunk_002dsection_002dcmd_002dstage"></a>Add the hunk under the cursor to the index. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-diff-section-cmd-stage</b><var><a name="index-egg_002ddiff_002dsection_002dcmd_002dstage-24"></a></var><br>
+<blockquote><p><a name="egg_002ddiff_002dsection_002dcmd_002dstage"></a>Update the index with the file in the diff header under the cursor. 
+If the file was deleted in the workdir then remove it from the index. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-staged-section-cmd-ediff3</b><var><a name="index-egg_002dstaged_002dsection_002dcmd_002dediff3-25"></a></var><br>
+<blockquote><p><a name="egg_002dstaged_002dsection_002dcmd_002dediff3"></a>Compare the staged copy of FILE and the version in HEAD using ediff. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-unmerged-section-cmd-ediff3</b><var><a name="index-egg_002dunmerged_002dsection_002dcmd_002dediff3-26"></a></var><br>
+<blockquote><p><a name="egg_002dunmerged_002dsection_002dcmd_002dediff3"></a>Run ediff3 to resolve merge conflicts in file of the combined diff
+section under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-unstaged-section-cmd-ediff</b><var><a name="index-egg_002dunstaged_002dsection_002dcmd_002dediff-27"></a></var><br>
+<blockquote><p><a name="egg_002dunstaged_002dsection_002dcmd_002dediff"></a>For the file in the diff section under the cursor. Compare it with its
+staged copy using ediff. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-diff-section-cmd-ediff</b><var><a name="index-egg_002ddiff_002dsection_002dcmd_002dediff-28"></a></var><br>
+<blockquote><p><a name="egg_002ddiff_002dsection_002dcmd_002dediff"></a>Run ediff on src and dest versions of the file in the diff section under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-hunk-section-cmd-visit-file-other-window</b><var><a name="index-egg_002dhunk_002dsection_002dcmd_002dvisit_002dfile_002dother_002dwindow-29"></a></var><br>
+<blockquote><p><a name="egg_002dhunk_002dsection_002dcmd_002dvisit_002dfile_002dother_002dwindow"></a>Visit the file in the diff section under the cursor, in the other window
+and goto the current line of the hunk. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-diff-section-cmd-visit-file-other-window</b><var><a name="index-egg_002ddiff_002dsection_002dcmd_002dvisit_002dfile_002dother_002dwindow-30"></a></var><br>
+<blockquote><p><a name="egg_002ddiff_002dsection_002dcmd_002dvisit_002dfile_002dother_002dwindow"></a>Visit the file in the diff section under the cursor, in the other window. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-ignore-pattern-from-string-at-point</b><var><a name="index-egg_002dignore_002dpattern_002dfrom_002dstring_002dat_002dpoint-31"></a></var><br>
+<blockquote><p><a name="egg_002dignore_002dpattern_002dfrom_002dstring_002dat_002dpoint"></a>Add an ignore pattern based on the string at point. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-find-file-at-point</b><var><a name="index-egg_002dfind_002dfile_002dat_002dpoint-32"></a></var><br>
+<blockquote><p><a name="egg_002dfind_002dfile_002dat_002dpoint"></a>alias for <code>find-file-at-point</code>
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-status-buffer-stage-untracked-file</b><var><a name="index-egg_002dstatus_002dbuffer_002dstage_002duntracked_002dfile-33"></a></var><br>
+<blockquote><p><a name="egg_002dstatus_002dbuffer_002dstage_002duntracked_002dfile"></a>Add untracked file(s) to the repository. 
+Acts on a single file or on a region which contains the names of
+untracked files. With prefix, only create the index entries without
+adding the contents. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-diff-section-cmd-unstage</b><var><a name="index-egg_002ddiff_002dsection_002dcmd_002dunstage-34"></a></var><br>
+<blockquote><p><a name="egg_002ddiff_002dsection_002dcmd_002dunstage"></a>For the file in the diff header under the cursor, revert its stage in
+the index to original.  If the file was a newly created file, it will
+be removed from the index.  If the file was added after a merge
+resolution, it will reverted back to conflicted state. Otherwise, its
+stage will be reset to HEAD. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-hunk-section-cmd-unstage</b><var><a name="index-egg_002dhunk_002dsection_002dcmd_002dunstage-35"></a></var><br>
+<blockquote><p><a name="egg_002dhunk_002dsection_002dcmd_002dunstage"></a>Remove the hunk under the cursor from the index. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-diff-section-cmd-revert-to-head</b><var><a name="index-egg_002ddiff_002dsection_002dcmd_002drevert_002dto_002dhead-36"></a></var><br>
+<blockquote><p><a name="egg_002ddiff_002dsection_002dcmd_002drevert_002dto_002dhead"></a>Revert the file in the diff section under the cursor and its slot in
+the index to its state in HEAD. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-diff-section-cmd-visit-file</b><var><a name="index-egg_002ddiff_002dsection_002dcmd_002dvisit_002dfile-37"></a></var><br>
+<blockquote><p><a name="egg_002ddiff_002dsection_002dcmd_002dvisit_002dfile"></a>Visit FILE. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-hunk-section-cmd-visit-file</b><var><a name="index-egg_002dhunk_002dsection_002dcmd_002dvisit_002dfile-38"></a></var><br>
+<blockquote><p><a name="egg_002dhunk_002dsection_002dcmd_002dvisit_002dfile"></a>Visit FILE and goto the current line of the hunk. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-section-cmd-toggle-hide-show-children</b><var><a name="index-egg_002dsection_002dcmd_002dtoggle_002dhide_002dshow_002dchildren-39"></a></var><br>
+<blockquote><p><a name="egg_002dsection_002dcmd_002dtoggle_002dhide_002dshow_002dchildren"></a>Toggle the visibility of the subsections of the section under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-start-new-branch</b><var><a name="index-egg_002dstart_002dnew_002dbranch-40"></a></var><br>
+<blockquote><p><a name="egg_002dstart_002dnew_002dbranch"></a>start a new branch from HEAD, keeping local modifications. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-search-file-changes</b><var><a name="index-egg_002dsearch_002dfile_002dchanges-41"></a></var><br>
+<blockquote><p><a name="egg_002dsearch_002dfile_002dchanges"></a>search in the DAG for commits that introduced or removed the <em>search term</em>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-grep</b><var><a name="index-egg_002dgrep-42"></a></var><br>
+<blockquote><p><a name="egg_002dgrep"></a>run grep on files tracked by git. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-status-buffer-stash-wip</b><var><a name="index-egg_002dstatus_002dbuffer_002dstash_002dwip-43"></a></var><br>
+<blockquote><p><a name="egg_002dstatus_002dbuffer_002dstash_002dwip"></a>Prompt for a description and stash
+current work-in-progress in workdir and the index. With prefix, the
+command will also stash untracked/unignored files. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-diff-ref</b><var><a name="index-egg_002ddiff_002dref-44"></a></var><br>
+<blockquote><p><a name="egg_002ddiff_002dref"></a>Prompt a revision compare against worktree. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-quit-buffer</b><var><a name="index-egg_002dquit_002dbuffer-45"></a></var><br>
+<blockquote><p><a name="egg_002dquit_002dbuffer"></a>Leave (and bury) an egg special buffer
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-status-buffer-checkout-ref</b><var><a name="index-egg_002dstatus_002dbuffer_002dcheckout_002dref-46"></a></var><br>
+<blockquote><p><a name="egg_002dstatus_002dbuffer_002dcheckout_002dref"></a>Prompt a revision to checkout. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-buffer-cmd-refresh</b><var><a name="index-egg_002dbuffer_002dcmd_002drefresh-47"></a></var><br>
+<blockquote><p><a name="egg_002dbuffer_002dcmd_002drefresh"></a>Refresh the current egg special buffer. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-style-command</b><var><a name="index-egg_002dlog_002dbuffer_002dstyle_002dcommand-48"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dstyle_002dcommand"></a>Re-run the command that create the buffer. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-status-buffer-undo-wdir</b><var><a name="index-egg_002dstatus_002dbuffer_002dundo_002dwdir-49"></a></var><br>
+<blockquote><p><a name="egg_002dstatus_002dbuffer_002dundo_002dwdir"></a>When in the status buffer, throw
+away local modifications in the work-tree.  With prefix, reset the
+work-tree to its state in HEAD. Otherwise, reset the work-tree to its
+staged state in the index. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-unstage-all-files</b><var><a name="index-egg_002dunstage_002dall_002dfiles-50"></a></var><br>
+<blockquote><p><a name="egg_002dunstage_002dall_002dfiles"></a>Unstage all files in the index. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-commit-log-edit</b><var><a name="index-egg_002dcommit_002dlog_002dedit-51"></a></var><br>
+<blockquote><p><a name="egg_002dcommit_002dlog_002dedit"></a>Open the commit buffer for composing a message. With <kbd>C-u</kbd> prefix,
+re-compose the message of the last commit. With <kbd>C-u C-u</kbd> prefix,
+avoid all composition, amend the last commit by reusing its commit
+message. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-msg-done</b><var><a name="index-egg_002dlog_002dmsg_002ddone-52"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dmsg_002ddone"></a>Take the appropriate action with the composed message. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-msg-newer-text</b><var><a name="index-egg_002dlog_002dmsg_002dnewer_002dtext-53"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dmsg_002dnewer_002dtext"></a>Cycle forward through comment history. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-msg-older-text</b><var><a name="index-egg_002dlog_002dmsg_002dolder_002dtext-54"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dmsg_002dolder_002dtext"></a>Cycle backward through comment history. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-msg-cancel</b><var><a name="index-egg_002dlog_002dmsg_002dcancel-55"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dmsg_002dcancel"></a>Cancel the current message editing. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-buffer-selective-rebase-continue</b><var><a name="index-egg_002dbuffer_002dselective_002drebase_002dcontinue-56"></a></var><br>
+<blockquote><p><a name="egg_002dbuffer_002dselective_002drebase_002dcontinue"></a>Continue the current rebase session. 
+The mode, sync or async, will depend on the nature of the current
+rebase session. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-buffer-selective-rebase-skip</b><var><a name="index-egg_002dbuffer_002dselective_002drebase_002dskip-57"></a></var><br>
+<blockquote><p><a name="egg_002dbuffer_002dselective_002drebase_002dskip"></a>Skip the current commit and continue the current rebase session. 
+The mode, sync or async, will depend on the nature of the current
+rebase session. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-buffer-rebase-abort</b><var><a name="index-egg_002dbuffer_002drebase_002dabort-58"></a></var><br>
+<blockquote><p><a name="egg_002dbuffer_002drebase_002dabort"></a>Abort the current rebase. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log</b><var><a name="index-egg_002dlog-59"></a></var><br>
+<blockquote><p><a name="egg_002dlog"></a>Show the commit DAG of REF-NAME. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-reflog</b><var><a name="index-egg_002dreflog-60"></a></var><br>
+<blockquote><p><a name="egg_002dreflog"></a>Show commit DAG of BRANCH and its reflogs. 
+This is just an alternative way to launch `egg-log'
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-file-log</b><var><a name="index-egg_002dfile_002dlog-61"></a></var><br>
+<blockquote><p><a name="egg_002dfile_002dlog"></a>Show the commits in the current branch's DAG that modified the current file. 
+With prefix,do not restrict the commits to the current branch's DAG. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-anchor-head</b><var><a name="index-egg_002dlog_002dbuffer_002danchor_002dhead-62"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002danchor_002dhead"></a>Move the current branch or the detached HEAD to the commit under the cursor. 
+The index will be reset and files will in worktree updated. If a file that is
+different between the original commit and the new commit, the git command will
+abort. This is basically git reset &ndash;keep. With C-u prefix, HEAD will be moved,
+index will be reset and the work tree updated by throwing away all local
+modifications (this is basically git reset &ndash;hard). With C-u C-u prefix,
+the command will prompt for the git reset mode to perform. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-checkout-commit</b><var><a name="index-egg_002dlog_002dbuffer_002dcheckout_002dcommit-63"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dcheckout_002dcommit"></a>Checkout the commit at
+POS. With prefix, force the checkout even if the index was different
+from the new commit. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-start-new-branch</b><var><a name="index-egg_002dlog_002dbuffer_002dstart_002dnew_002dbranch-64"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dstart_002dnew_002dbranch"></a>Create a new branch, and make it a new HEAD
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-create-new-branch</b><var><a name="index-egg_002dlog_002dbuffer_002dcreate_002dnew_002dbranch-65"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dcreate_002dnew_002dbranch"></a>Create a new branch, without checking it out. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-push-to-local</b><var><a name="index-egg_002dlog_002dbuffer_002dpush_002dto_002dlocal-66"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dpush_002dto_002dlocal"></a>Push a ref or a commit under the cursor onto HEAD. 
+With C-u, instead of HEAD, prompt for another ref as destination. 
+With C-u C-u, will force the push even if it would be non-ff. 
+When the destination of the push is HEAD, the underlying git command
+would be a pull (by default &ndash;ff-only). 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-insert-commit</b><var><a name="index-egg_002dlog_002dbuffer_002dinsert_002dcommit-67"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dinsert_002dcommit"></a>Load and show the details of the commit under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-tag-commit</b><var><a name="index-egg_002dlog_002dbuffer_002dtag_002dcommit-68"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dtag_002dcommit"></a>Tag the commit under the cursor. 
+With prefix, force the creation of the tag even if it replace an
+existing one with the same name. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-atag-commit</b><var><a name="index-egg_002dlog_002dbuffer_002datag_002dcommit-69"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002datag_002dcommit"></a>Start composing the message for an
+annotated tag on the commit at the cursor.  With prefix, the tag will
+be gpg-signed. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-merge</b><var><a name="index-egg_002dlog_002dbuffer_002dmerge-70"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dmerge"></a>Merge to HEAD the path starting from the commit under the cursor. 
+With C-u prefix, do not auto commit the merge result. 
+With C-u C-u prefix, prompt the user for the type of merge to perform. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-pick-1cherry</b><var><a name="index-egg_002dlog_002dbuffer_002dpick_002d1cherry-71"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dpick_002d1cherry"></a>Pick one cherry under the cursor and put on HEAD. 
+With prefix, will not auto-commit but let the user re-compose the message. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-rebase</b><var><a name="index-egg_002dlog_002dbuffer_002drebase-72"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002drebase"></a>Rebase HEAD using the commit under the
+cursor as upstream.  If there was a commit marked as BASE, then rebase
+HEAD onto the commit under the cursor using the BASE commit as upstream. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-rebase-interactive</b><var><a name="index-egg_002dlog_002dbuffer_002drebase_002dinteractive-73"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002drebase_002dinteractive"></a>Start an interactive rebase
+session using the marked commits.  The commit under the cursor is the
+where the chain of marked commits will rebased onto. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-diff-revs</b><var><a name="index-egg_002dlog_002dbuffer_002ddiff_002drevs-74"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002ddiff_002drevs"></a>Compare HEAD against the rev under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-rm-ref</b><var><a name="index-egg_002dlog_002dbuffer_002drm_002dref-75"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002drm_002dref"></a>Remove the ref under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-reflog-ref</b><var><a name="index-egg_002dlog_002dbuffer_002dreflog_002dref-76"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dreflog_002dref"></a>Show reflogs for the ref under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-push-head-to-local</b><var><a name="index-egg_002dlog_002dbuffer_002dpush_002dhead_002dto_002dlocal-77"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dpush_002dhead_002dto_002dlocal"></a>WTF. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-fetch-remote-ref</b><var><a name="index-egg_002dlog_002dbuffer_002dfetch_002dremote_002dref-78"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dfetch_002dremote_002dref"></a>Download and update the remote tracking branch at under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-search-changes</b><var><a name="index-egg_002dsearch_002dchanges-79"></a></var><br>
+<blockquote><p><a name="egg_002dsearch_002dchanges"></a>Search history from HEAD for changes
+introducing/removing a term.If a BASE ref was marked, then restrict the
+search to BASE..HEAD. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-search-changes-all</b><var><a name="index-egg_002dsearch_002dchanges_002dall-80"></a></var><br>
+<blockquote><p><a name="egg_002dsearch_002dchanges_002dall"></a>Search entire history for changes introducing/removing a term. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-locate-commit</b><var><a name="index-egg_002dlog_002dlocate_002dcommit-81"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dlocate_002dcommit"></a>Relocate the commit under the cursor back to the full history in the log buffer. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-push-to-remote</b><var><a name="index-egg_002dlog_002dbuffer_002dpush_002dto_002dremote-82"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dpush_002dto_002dremote"></a>Upload the ref under the cursor to a remote repository. 
+If the ref track a remote tracking branch, then the repo to
+upload to is the repo of the remote tracking branch. Otherwise,
+prompt for a remote repo. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-search-file-changes-all</b><var><a name="index-egg_002dsearch_002dfile_002dchanges_002dall-83"></a></var><br>
+<blockquote><p><a name="egg_002dsearch_002dfile_002dchanges_002dall"></a>Search file's full history for changes introducing/removing a term. 
+</p></blockquote></div>
+egg-find-tracked-file
+
+<div class="defun">
+&mdash; Command: <b>egg-find-tracked-file</b><var><a name="index-egg_002dfind_002dtracked_002dfile-84"></a></var><br>
+<blockquote><p><a name="egg_002dfind_002dtracked_002dfile"></a>Open a file tracked by git. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-sb-buffer-show-stash</b><var><a name="index-egg_002dsb_002dbuffer_002dshow_002dstash-85"></a></var><br>
+<blockquote><p><a name="egg_002dsb_002dbuffer_002dshow_002dstash"></a>Load the details of the stash under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-sb-buffer-apply-stash</b><var><a name="index-egg_002dsb_002dbuffer_002dapply_002dstash-86"></a></var><br>
+<blockquote><p><a name="egg_002dsb_002dbuffer_002dapply_002dstash"></a>Apply the stash under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-sb-buffer-drop-stash</b><var><a name="index-egg_002dsb_002dbuffer_002ddrop_002dstash-87"></a></var><br>
+<blockquote><p><a name="egg_002dsb_002dbuffer_002ddrop_002dstash"></a>Drop the stash under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-sb-buffer-pop-stash</b><var><a name="index-egg_002dsb_002dbuffer_002dpop_002dstash-88"></a></var><br>
+<blockquote><p><a name="egg_002dsb_002dbuffer_002dpop_002dstash"></a>Pop and apply the stash under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-msg-buffer-toggle-signed</b><var><a name="index-egg_002dlog_002dmsg_002dbuffer_002dtoggle_002dsigned-89"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dmsg_002dbuffer_002dtoggle_002dsigned"></a>Toggle the to-be-gpg-signed state of the message being composed. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-next-ref</b><var><a name="index-egg_002dlog_002dbuffer_002dnext_002dref-90"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dnext_002dref"></a>Move cursor to the next ref. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-prev-ref</b><var><a name="index-egg_002dlog_002dbuffer_002dprev_002dref-91"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dprev_002dref"></a>Move cursor to the previous ref. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-show-ref</b><var><a name="index-egg_002dlog_002dshow_002dref-92"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dshow_002dref"></a>Show information about the ref or the mark under the cursor. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-mark</b><var><a name="index-egg_002dlog_002dbuffer_002dmark-93"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dmark"></a>Mark commit under the cursor as the BASE commit. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-unmark</b><var><a name="index-egg_002dlog_002dbuffer_002dunmark-94"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dunmark"></a>Unmark commit under the cursor. 
+With C-u prefix, unmark all. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-mark-edit</b><var><a name="index-egg_002dlog_002dbuffer_002dmark_002dedit-95"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dmark_002dedit"></a>Mark commit under the cursor to be edited in the upcoming interactive rebase. 
+With C-u prefix, prompt for reordering. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-mark-squash</b><var><a name="index-egg_002dlog_002dbuffer_002dmark_002dsquash-96"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dmark_002dsquash"></a>Mark commit under the cursor to be squashed in the upcoming interactive rebase. 
+With C-u prefix, prompt for reordering. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-mark-pick</b><var><a name="index-egg_002dlog_002dbuffer_002dmark_002dpick-97"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dmark_002dpick"></a>Mark commit under the cursor to be picked in the upcoming interactive rebase. 
+With C-u prefix, prompt for reordering. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-diff-upstream</b><var><a name="index-egg_002dlog_002dbuffer_002ddiff_002dupstream-98"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002ddiff_002dupstream"></a>Compare commit under the cursor against its upstream. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-fetch</b><var><a name="index-egg_002dlog_002dbuffer_002dfetch-99"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dfetch"></a>Fetch some refs from remote at POS. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-log-buffer-push</b><var><a name="index-egg_002dlog_002dbuffer_002dpush-100"></a></var><br>
+<blockquote><p><a name="egg_002dlog_002dbuffer_002dpush"></a>Push some refs to the remote at POS
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Command: <b>egg-blame-locate-commit</b><var><a name="index-egg_002dblame_002dlocate_002dcommit-101"></a></var><br>
+<blockquote><p><a name="egg_002dblame_002dlocate_002dcommit"></a>Jump to a commit in the branch history from an annotated blame section. 
+With C-u prefix, the history of all refs is used. 
+</p></blockquote></div>
+
+</body></html>
+
+<!--
+
+Local Variables:
+coding: utf-8
+End:
+
+-->
