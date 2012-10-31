@@ -7,40 +7,60 @@
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
+    <script src="javascripts/main.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
   </head>
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/bogolisk/egg">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/bogolisk/egg/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/bogolisk/egg/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
+
+      <header>
+        <h1>Egg</h1>
+        <p>Emacs Got Git. </p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/bogolisk/egg" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/bogolisk/egg/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/bogolisk/egg/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
 
     <div class="wrapper">
-
+      <nav>
+        <ul></ul>
+      </nav>
       <section>
-        <div id="title">
-          <h1>Egg</h1>
-          <p>Emacs Got Git. </p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/bogolisk">bogolisk</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
-        </div>
+        <h1>Welcome Egg, the <em>natural</em> Emacs interface to Git</h1>
 
-        <h3>Welcome Egg, the <em>natural</em> Emacs interface to Git</h3>
+<p><a href="egg.html">(Draft) Manual</a></p>
+
+<h2>Everybody loves Screenshots</h2>
+
+<h3>Selecting Commits for Interactive Rebase</h3>
+
+<p><img src="https://lh5.googleusercontent.com/-BV2K3Bx_BYY/UIc5OjYLyiI/AAAAAAAAAAM/Utv2o5fHBtE/s1600/egg-log-rebase.png" alt="Selecting Commits for Rebase"></p>
+
+<h4>Resolving Conflicts</h4>
+
+<p><img src="https://lh5.googleusercontent.com/-J4T-mpsReXU/UIc90rvnCjI/AAAAAAAAAA0/LgcJTZ83gmU/s1600/egg-conflict-merge.png" alt="Conflict Resolution"></p>
+
+<h3>Reflogs</h3>
+
+<p><img src="https://lh5.googleusercontent.com/-aOmV1qVkdio/UIdAaOsRqoI/AAAAAAAAABM/18Ur-SkArBk/s1600/egg-log-reflogs.png" alt="Reflogs"></p>
       </section>
-
+      <footer>
+        <p>Project maintained by <a href="https://github.com/bogolisk">bogolisk</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
