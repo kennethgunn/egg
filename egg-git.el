@@ -794,7 +794,7 @@ REMOTE-REF-PROPERTIES and REMOTE-SITE-PROPERTIES."
 			      (group (optional (seq (group (one-or-more 
 							    (not (any ?\n blank ?^ ?/))))
 						    "/")) 
-				     (one-or-more (not (any ?\n blank ?^ ?/)))))
+				     (one-or-more (not (any ?\n blank ?^)))))
 			 (group "stash")))
 	      (optional (group "^{}"))
 	      line-end))
